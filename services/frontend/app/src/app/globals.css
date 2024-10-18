@@ -1,0 +1,124 @@
+:root {
+  --pastel-bg: #f6f8fa; /* Фоновый цвет */
+  --pastel-primary: #6eafab; /* Основной цвет */
+  --pastel-secondary: #a5c9ca; /* Второстепенный цвет */
+  --pastel-accent: #4b8f89; /* Цвет акцента */
+  --pastel-dark-bg: #2e2e2e; /* Темный фон */
+  --pastel-dark-text: #f2f2f2; /* Текст на темном фоне (более светлый) */
+  --pastel-text: #2c3e50; /* Основной цвет текста (более темный) */
+  --pastel-light-bg: #ecf0f1; /* Светлый фон */
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Основной фон и цвет текста для темного режима */
+body {
+  background-color: var(--pastel-dark-bg); /* Темный фон */
+  color: var(--pastel-dark-text); /* Светлый цвет текста */
+}
+
+h1, h2 {
+  color: var(--pastel-primary); /* Более темный цвет для заголовков */
+}
+
+/* Стили для полей ввода */
+input, select, textarea {
+  background-color: var(--pastel-light-bg); /* Светлый фон полей ввода */
+  color: #333; /* Темный цвет текста в полях ввода */
+  border: 1px solid var(--pastel-secondary); /* Бордюр */
+}
+
+/* Стили для кнопок */
+button {
+  background-color: var(--pastel-primary); /* Основной цвет для кнопок */
+  color: var(--pastel-dark-text); /* Светлый цвет текста */
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--pastel-accent); /* Цвет акцента при наведении */
+}
+
+.mt-dark {
+  background-color: var(--pastel-dark-bg); /* Темный фон подсказок и отчетов */
+  padding: 10px;
+  border-radius: 5px;
+  color: var(--pastel-dark-text);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #444; /* Линии в таблице */
+  color: var(--pastel-text); /* Более темный текст в таблицах */
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+.bg-report {
+  background-color: var(--pastel-secondary); /* Используйте ваш цвет */
+  border-radius: 8px;
+  padding: 16px;
+}
+
+table {
+  width: 100%; /* Занимает всю ширину */
+  border-collapse: collapse; /* Убирает отступы между ячейками */
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2; /* Светлый фон для четных строк */
+}
+
+.bg-report {
+  width: 100%; /* Установка ширины на 100% */
+  max-height: calc(100vh - 100px); /* Установка максимальной высоты */
+  overflow-y: auto; /* Включение прокрутки по вертикали */
+
+}
+
+/* Основные стили для подсказки и отчета */
+.collapsible {
+  overflow: hidden;
+  transition: max-height 1.5s ease-out; /* Плавный переход высоты */
+}
+
+/* Состояние, когда элемент закрыт */
+.collapsible-hidden {
+  max-height: 0; /* Нулевая высота, когда скрыто */
+}
+
+/* Состояние, когда элемент открыт */
+.collapsible-visible {
+  max-height: 5000px; /* Максимальная высота, когда открыто (можете настроить) */
+}
