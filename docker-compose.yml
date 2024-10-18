@@ -1,0 +1,26 @@
+version: '3.8'  # Указываем версию Docker Compose
+
+services:
+  frontend:
+    build:
+      context: .  # Указываем контекст сборки
+      dockerfile: Dockerfile  # Указываем имя Dockerfile
+    ports:
+      - '3000:3000'  # Пробрасываем порт 3000
+    environment:
+      - NODE_ENV=production  # Устанавливаем переменную окружения
+    volumes:
+      - .:/app  # Привязываем локальную директорию к директории приложения в контейнере
+    restart: unless-stopped  # Перезапускать контейнер в случае сбоя
+    
+  backend:
+    build:
+      context: .  # Указываем контекст сборки
+      dockerfile: Dockerfile  # Указываем имя Dockerfile
+    ports:
+      - '3000:3000'  # Пробрасываем порт 3000
+    environment:
+      - NODE_ENV=production  # Устанавливаем переменную окружения
+    volumes:
+      - .:/app  # Привязываем локальную директорию к директории приложения в контейнере
+    restart: unless-stopped  # Перезапускать контейнер в случае сбоя

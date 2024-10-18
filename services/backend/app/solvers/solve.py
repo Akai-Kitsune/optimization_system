@@ -2,13 +2,15 @@ from abc import ABC, abstractmethod
 import numpy as np
 from sympy import lambdify, Matrix
 
+# Абстрактый класс для решения уравнений, он определяет общий интерфейс
 class EquationSolver(ABC):
     @abstractmethod
     def solve(self, f_matrix, x, x0):
         pass
 
+# Класс для решения уравнений методом Ньютона
 class NewtonSolver(EquationSolver):
-    def solve(self, f_matrix, x, x0, tol=1e-6, max_iter=100, regularization=1e-6):
+    def solve(self, f_matrix, x, x0, tol=1e-6, max_iter=1000, regularization=1e-6):
         f_lambdified = lambdify(x, f_matrix, 'numpy')
         iterations = []
         for _ in range(max_iter):
@@ -29,8 +31,9 @@ class NewtonSolver(EquationSolver):
                 return x0, iterations
         return x0, iterations
 
+# Класс для решения уравнений методом Бройдена
 class BroydenSolver(EquationSolver):
-    def solve(self, f_matrix, x, x0, tol=1e-6, max_iter=100):
+    def solve(self, f_matrix, x, x0, tol=1e-6, max_iter=1000):
         f_lambdified = lambdify(x, f_matrix, 'numpy')
         iterations = []
         B = np.eye(len(x0))
