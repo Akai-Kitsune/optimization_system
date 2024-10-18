@@ -1,26 +1,39 @@
+
 version: '3.8'  # Указываем версию Docker Compose
 
 services:
   frontend:
     build:
-      context: .  # Указываем контекст сборки
+      context: ./services/frontend/  # Указываем контекст сборки
       dockerfile: Dockerfile  # Указываем имя Dockerfile
+    # command: 'npm run dev'
     ports:
       - '3000:3000'  # Пробрасываем порт 3000
     environment:
       - NODE_ENV=production  # Устанавливаем переменную окружения
-    volumes:
-      - .:/app  # Привязываем локальную директорию к директории приложения в контейнере
+      - PYTHON_SERVER=backend:5000
+    # volumes:
+    #   - ./services/frontend/app/.:/app  # Привязываем локальную директорию к директории приложения в контейнере
     restart: unless-stopped  # Перезапускать контейнер в случае сбоя
-    
+    networks:
+      - net-opt
+
   backend:
     build:
-      context: .  # Указываем контекст сборки
+      context: ./services/backend/  # Указываем контекст сборки
       dockerfile: Dockerfile  # Указываем имя Dockerfile
     ports:
-      - '3000:3000'  # Пробрасываем порт 3000
+      - '8000:5000'  # Пробрасываем порт 3000
     environment:
       - NODE_ENV=production  # Устанавливаем переменную окружения
-    volumes:
-      - .:/app  # Привязываем локальную директорию к директории приложения в контейнере
+    # volumes:
+    #   - ./services/backend/:/app  # Привязываем локальную директорию к директории приложения в контейнере
     restart: unless-stopped  # Перезапускать контейнер в случае сбоя
+    networks:
+      - net-opt
+
+networks:
+  net-opt:
+    driver: bridge
+    name: net-opt
+

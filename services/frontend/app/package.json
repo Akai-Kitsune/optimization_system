@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev_local": "PYTHON_SERVER=localhost:5000 next dev",
     "build": "next build",
     "start": "next start",
+    "start_local": "PYTHON_SERVER=localhost:5000 next start",
     "lint": "next lint"
   },
   "dependencies": {

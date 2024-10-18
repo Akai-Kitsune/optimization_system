@@ -31,6 +31,8 @@ def solve(request: SolveRequest) -> SolveResponse:
     use_case = SolveEquationsUseCase(solver)
 
     solution, iterations = use_case.execute(
-        request.equations, request.variablesCount,  [np.float64(request.initialPoint[0]), np.float64(request.initialPoint[1])]
+        # request.equations, request.variablesCount,  [np.float64(request.initialPoint[0]), np.float64(request.initialPoint[1])]
+        request.equations, request.variablesCount,  [np.float64(request.initialPoint[i]) for i in range(len(request.initialPoint))]
+
     )
     return {"solution": solution, "iterations": iterations}

@@ -12,14 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Устанавливаем зависимости отдельно для оптимизации кэширования Docker
-COPY requirements.txt ./
+COPY ./app/requirements.txt ./
 
 # Установим зависимости через pip
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 # Скопируем все файлы проекта в контейнер
-COPY . .
+COPY app/ .
 
 # Создаем пользователя без root-доступа для запуска приложения
 RUN useradd -m nonrootuser
@@ -32,4 +32,4 @@ EXPOSE 5000
 ENV PYTHONUNBUFFERED=1
 
 # Команда для запуска FastAPI через Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "5000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]

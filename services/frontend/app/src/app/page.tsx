@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import EquationInput from '../components/EquationInput';
 
-const hint = "Пример: 2x_1 + 3x_2 + сos(x_3) = 5";
+// const hint = "Пример: 2x_1 + 3x_2 + сos(x_3) = 5";
 
 export default function Home() {
   const [variablesCount, setVariablesCount] = useState(2);
@@ -14,20 +14,32 @@ export default function Home() {
   const [showHint, setShowHint] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [initialPoint, setInitialPoint] = useState(Array.from({ length: variablesCount }, () => '0'));
-  const [rightParts, setRightParts] = useState(Array.from({ length: 2 }, () => '0'));
+  // const [rightParts, setRightParts] = useState(Array.from({ length: 2 }, () => '0'));
 
-  const handleVariableCountChange = (e) => {
+  type IVariableCount = {
+    target: {
+      value: string
+    }
+  }
+
+  type IIter = {
+    iteration: number,
+    F: object,
+    x: object
+  }
+
+  const handleVariableCountChange = (e: IVariableCount) => {
     const count = parseInt(e.target.value);
     if (!isNaN(count) && count > 0 && count <= 4) {  // Проверяем, что значение валидное
       setVariablesCount(count);
       setEquations(Array.from({ length: count }, () => ''));
-      setRightParts(Array.from({ length: count }, () => '0'));
+      // setRightParts(Array.from({ length: count }, () => '0'));
       setInitialPoint(Array.from({ length: count }, () => '0'));
     } else {
       // Устанавливаем значение по умолчанию, если ввод некорректен
       setVariablesCount(2);
       setEquations(Array.from({ length: 2 }, () => ''));
-      setRightParts(Array.from({ length: 2 }, () => '0'));
+      // setRightParts(Array.from({ length: 2 }, () => '0'));
       setInitialPoint(Array.from({ length: 2 }, () => '0'));
     }
   };
@@ -35,7 +47,7 @@ export default function Home() {
   // Используйте ref для ссылки на отчет
   const reportRef = useRef(null);
 
-  const handleEquationChange = (eqIndex, value) => {
+  const handleEquationChange = (eqIndex: number, value: string) => {
     const newEquations = [...equations];
     
     // Изменяем уравнение, добавляя правую часть со знаком минус
@@ -86,6 +98,8 @@ export default function Home() {
   const toggleReport = () => setShowReport(!showReport);
 
   return (
+    <html>
+    <body>
     <div className="min-h-screen flex flex-col items-center justify-center bg-primary p-6">
       <h1 className="text-3xl mb-6 font-semibold">Система нелинейных уравнений</h1>
       
@@ -206,7 +220,7 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {iterations.map((iter, index) => (
+                {iterations.map((iter: IIter, index: number) => (
                   <tr key={index}>
                     <td className="p-2 border-b">{iter?.iteration}</td>
                     <td className="p-2 border-b">{JSON.stringify(iter.x)}</td>
@@ -221,6 +235,7 @@ export default function Home() {
         )}
       </div>
     </div>
-
+    </body>
+    </html>
   );
 }

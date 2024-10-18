@@ -5,13 +5,13 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Копируем package.json и package-lock.json
-COPY package.json package-lock.json ./
+COPY app/package*.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
 # Копируем все файлы приложения
-COPY . .
+COPY app/ .
 
 # Сборка приложения для продакшна
 RUN npm run build
@@ -26,7 +26,9 @@ WORKDIR /app
 COPY --from=builder /app/package.json ./ 
 COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
+# COPY --from=builder /app/ ./
+
+# COPY --from=builder /app/public ./public
 
 # Устанавливаем только необходимые зависимости для продакшна
 RUN npm install --production
