@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect} from 'react';
 import EquationInput from '../components/EquationInput';
 
 // const hint = "Пример: 2x_1 + 3x_2 + сos(x_3) = 5";
@@ -16,6 +16,8 @@ export default function Home() {
   const [initialPoint, setInitialPoint] = useState(Array.from({ length: variablesCount }, () => '0'));
   // const [rightParts, setRightParts] = useState(Array.from({ length: 2 }, () => '0'));
 
+
+
   type IVariableCount = {
     target: {
       value: string
@@ -27,6 +29,11 @@ export default function Home() {
     F: object,
     x: object
   }
+
+  useEffect(() => {
+    // Обновление начальной точки при изменении количества переменных
+    setInitialPoint(Array.from({ length: variablesCount }, () => '0'));
+  }, [variablesCount]);
 
   const handleVariableCountChange = (e: IVariableCount) => {
     const count = parseInt(e.target.value);
@@ -97,12 +104,77 @@ export default function Home() {
 
   const toggleReport = () => setShowReport(!showReport);
 
+  const handleAutoSetup1 = () => {
+    setVariablesCount(3);
+    setEquations([
+      "(x_1-2)^2 + (x_2 - 1)^2 + (x_3 + 0.5)^2 - 250",
+      "2*x_1 + x_2 - 0.5*x_3 - 5",
+      "-0.5*x_1 - 5*x_1 + 3*x_3 + 2"
+    ]);
+    setInitialPoint(["2.5", "2", "5"]);
+  };
+
+  const handleAutoSetup2 = () => {
+    setVariablesCount(3);
+    setEquations([
+      "5*cos(x_2)",
+      "3*x_1^2 + 7*x_2*x_3",
+      "5*cos(x_2)^2 + (3*x_1^2 + 7*x_2*x_3)^2"
+    ]);
+    setInitialPoint(["4", "1.5", "5"]);
+  };
+
+  const handleAutoSetup3 = () => {
+    setVariablesCount(2);
+    setEquations([
+      "3*x_1^2 + 4*x_2",
+      "4*x_1-x_1^3"
+    ]);
+    setInitialPoint(["1", ".5"]);
+  };
+
+  const handleAutoSetup4 = () => {
+    setVariablesCount(3);
+    setEquations([
+      "2.5*x_1^2 + (x_2-2)^2 + 4 - 16*25",
+      "2.5*x_1 + 2*x_2 - 2*x_3",
+      "x_1 + x_2 + x_3 - 10"
+    ]);
+    setInitialPoint(["3.5", "1", "26"]);
+  };
+
   return (
-    <html>
-    <body>
+
     <div className="min-h-screen flex flex-col items-center justify-center bg-primary p-6">
       <h1 className="text-3xl mb-6 font-semibold">Система нелинейных уравнений</h1>
       
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <button
+          className="bg-button hover:bg-button-hover p-2 rounded transition-colors duration-300"
+          onClick={handleAutoSetup1}
+        >
+          Задача 1
+        </button>
+        <button
+          className="bg-button hover:bg-button-hover p-2 rounded transition-colors duration-300"
+          onClick={handleAutoSetup2}
+        >
+          Задача 2
+        </button>
+        <button
+          className="bg-button hover:bg-button-hover p-2 rounded transition-colors duration-300"
+          onClick={handleAutoSetup3}
+        >
+          Задача 3
+        </button>
+        <button
+          className="bg-button hover:bg-button-hover p-2 rounded transition-colors duration-300"
+          onClick={handleAutoSetup4}
+        >
+          Задача 4
+        </button>
+      </div>
+
       <div className="flex flex-col gap-4 mb-6 w-full max-w-md">
         <div className="flex items-center gap-2">
           <label className="font-medium">Количество переменных:</label>
@@ -166,16 +238,17 @@ export default function Home() {
   </div>
 
 
-      <div className="w-full max-w-md mb-6">
-        {[...Array(variablesCount)].map((_, i) => (
-          <EquationInput
-            key={i}
-            index={i}
-            handleEquationChange={handleEquationChange}
-            className="bg-input rounded p-2 mb-2 w-full"
-          />
-        ))}
-      </div>
+  <div className="w-full max-w-md mb-6">
+      {equations.map((eq, index) => (
+        <EquationInput
+          key={`equation-${index}`}
+          index={index}
+          value={eq} // Передаем значение уравнения
+          handleEquationChange={handleEquationChange}
+          className="w-full"
+        />
+      ))}
+    </div>
 
       <button
         className="bg-button hover:bg-button-hover p-2 mt-4 rounded focus:outline-none transition-colors duration-300"
@@ -235,7 +308,6 @@ export default function Home() {
         )}
       </div>
     </div>
-    </body>
-    </html>
+
   );
 }

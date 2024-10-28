@@ -9,11 +9,12 @@ services:
     # command: 'npm run dev'
     ports:
       - '3000:3000'  # Пробрасываем порт 3000
+      - '3001:3001'
     environment:
       - NODE_ENV=production  # Устанавливаем переменную окружения
       - PYTHON_SERVER=backend:5000
     # volumes:
-    #   - ./services/frontend/app/.:/app  # Привязываем локальную директорию к директории приложения в контейнере
+    #   - ./services/frontend/app.:/app  # Привязываем локальную директорию к директории приложения в контейнере
     restart: unless-stopped  # Перезапускать контейнер в случае сбоя
     networks:
       - net-opt

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 export default async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -7,8 +8,8 @@ export default async (req, res) => {
     const { equations, variablesCount, method, initialPoint } = req.body;
     // Отправляем запрос на Python-сервер
     console.log(equations, variablesCount, initialPoint, method);
-    console.log('host:', `${process.env.PYTHON_SERVER}/solve`);
-    const response = await fetch(`http://${process.env.PYTHON_SERVER}/solve`, {
+    console.log('host:', `${process.env.PYTHON_SERVER ?? 'localhost:5000'}/solve`);
+    const response = await fetch(`http://${process.env.PYTHON_SERVER ?? 'localhost:5000'}/solve`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
