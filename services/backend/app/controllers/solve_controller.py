@@ -11,11 +11,11 @@ import numpy as np
 router = APIRouter()
 
 
-@router.get('/ping')
+@router.get('/api/ping')
 def ping():
     return {"message": "pong"}
 
-@router.post("/solve")
+@router.post("/api/solve")
 def solve(request: SolveRequest) -> SolveResponse:
     if len(request.equations) != request.variablesCount:
         raise HTTPException(status_code=400, detail="Number of equations must match variables count")

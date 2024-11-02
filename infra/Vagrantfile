@@ -1,0 +1,92 @@
+Vagrant.configure("2") do |config|
+  # Используем образ Ubuntu Server
+  config.vm.box = "bento/ubuntu-22.04-arm64"
+  # Название виртуальной машины для удобства
+  config.vm.define "optimization_vm" do |opt_vm|
+    
+    # Настройка сети и IP-адрес
+    # opt_vm.vm.network "private_network", ip: "192.168.56.11"
+
+    # Настройка hostname
+    opt_vm.vm.hostname = "optimization.local"
+
+    # Пробросим порты для доступа к Nginx извне
+    opt_vm.vm.network "forwarded_port", guest: 80, host: 8080
+    opt_vm.vm.network "forwarded_port", guest: 443, host: 8443
+
+    # Настройка памяти и процессора
+    # Указываем, что используется VMware в качестве провайдера
+    opt_vm.vm.provider "vmware" do |vmware|
+      vmware.memory = 1024
+      vmware.cpus = 2
+    end
+
+    # Выполнение скриптов при настройке
+    opt_vm.vm.provision "shell", inline: <<-SHELL
+      # Обновление системы
+      sudo apt-get update -y
+      
+      # Установка Docker
+      sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+      sudo apt-get update -y
+      sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+      # Установка Nginx и OpenSSL для создания сертификатов
+      sudo apt-get install -y nginx openssl
+
+      # Создание директории для хранения сертификатов
+      sudo mkdir -p /etc/nginx/ssl
+
+      # Генерация самоподписанных сертификатов
+      sudo openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
+        -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=optimization.local" \
+        -keyout /etc/nginx/ssl/optimization.local.key \
+        -out /etc/nginx/ssl/optimization.local.crt
+
+      # Настройка Nginx для работы с HTTPS и HTTP
+      sudo tee /etc/nginx/sites-available/optimization.local <<EOF
+      server {
+          listen 80;
+          server_name optimization.local;
+          return 301 https://\$host\$request_uri;
+      }
+
+      server {
+          listen 443 ssl;
+          server_name optimization.local;
+
+          ssl_certificate /etc/nginx/ssl/optimization.local.crt;
+          ssl_certificate_key /etc/nginx/ssl/optimization.local.key;
+
+          location / {
+              proxy_pass http://localhost:5000;
+              proxy_set_header Host \$host;
+              proxy_set_header X-Real-IP \$remote_addr;
+              proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto \$scheme;
+          }
+
+          location /solve {
+            proxy_pass http://localhost:3000/solve;
+              proxy_set_header Host \$host;
+              proxy_set_header X-Real-IP \$remote_addr;
+              proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto \$scheme;
+          }
+      }
+      EOF
+
+      # Активация конфигурации и перезагрузка Nginx
+      sudo ln -s /etc/nginx/sites-available/optimization.local /etc/nginx/sites-enabled/
+      sudo systemctl restart nginx
+    SHELL
+
+  end
+
+  # Настройка синхронизации времени, чтобы избежать потенциальных проблем с временными зонами
+  config.vm.provision "shell", inline: "sudo timedatectl set-timezone UTC"
+
+end
+

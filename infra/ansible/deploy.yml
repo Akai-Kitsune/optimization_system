@@ -1,0 +1,75 @@
+
+---
+- name: Deploy optimization system
+  hosts: ubuntu_server
+  become: true
+
+  vars:
+    domain_name: "optimization.akaiku.tech"
+    frontend_port: "20000"
+    backend_port: "20001"
+    project_dir: "/home/akaiku/optimization_system"
+    nginx_conf: "/etc/nginx/sites-available/optimization.conf"
+    nginx_link: "/etc/nginx/sites-enabled/optimization.conf"
+    letsencrypt_email: "AkaiKu.c@yandex.ru"  # Замените на ваш email для Let's Encrypt
+
+  tasks:
+    - name: Update and install system dependencies
+      apt:
+        update_cache: yes
+        name: [ "git", "nginx", "python3-pip", "python3-certbot-nginx", "python3-docker" ]
+        state: present
+
+    - name: Clone the repository
+      git:
+        repo: "git@github.com:Akai-Kitsune/optimization_system.git"
+        dest: "{{ project_dir }}"
+        version: "main"
+        force: yes
+        accept_hostkey: yes
+      become: false
+
+    - name: Create and start services
+      community.docker.docker_compose_v2:
+        project_src: "{{ project_dir }}"
+      register: output
+  
+    - name: Show results
+      ansible.builtin.debug:
+        var: output
+    
+    - name: Configure Nginx for the site
+      template:
+        src: templates/nginx_optimization_http.conf.j2
+        dest: "{{ nginx_conf }}"
+      notify: restart nginx
+
+    - name: Enable site configuration in Nginx
+      file:
+        src: "{{ nginx_conf }}"
+        dest: "{{ nginx_link }}"
+        state: link
+      notify: restart nginx
+
+    - name: Ensure Certbot SSL options file exists
+      get_url:
+        url: https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem
+        dest: /etc/letsencrypt/ssl-dhparams.pem
+        mode: 0644
+
+    - name: Obtain SSL certificate
+      command: certbot certonly --nginx -d "{{ domain_name }}" --non-interactive --agree-tos --email "{{ letsencrypt_email }}"
+      register: certbot_result
+      notify: configure nginx for https
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: configure nginx for https
+      template:
+        src: templates/nginx_optimization.conf.j2
+        dest: "{{ nginx_conf }}"
+      notify: restart nginx

@@ -8,11 +8,11 @@ services:
       dockerfile: Dockerfile  # Указываем имя Dockerfile
     # command: 'npm run dev'
     ports:
-      - '3000:3000'  # Пробрасываем порт 3000
+      - '20000:3000'  # Пробрасываем порт 3000
       - '3001:3001'
     environment:
       - NODE_ENV=production  # Устанавливаем переменную окружения
-      - PYTHON_SERVER=backend:5000
+      - PYTHON_SERVER=backend:5000/api
     # volumes:
     #   - ./services/frontend/app.:/app  # Привязываем локальную директорию к директории приложения в контейнере
     restart: unless-stopped  # Перезапускать контейнер в случае сбоя
@@ -24,7 +24,7 @@ services:
       context: ./services/backend/  # Указываем контекст сборки
       dockerfile: Dockerfile  # Указываем имя Dockerfile
     ports:
-      - '8000:5000'  # Пробрасываем порт 3000
+      - '20001:5000'  # Пробрасываем порт 3000
     environment:
       - NODE_ENV=production  # Устанавливаем переменную окружения
     # volumes:

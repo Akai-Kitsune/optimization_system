@@ -1,0 +1,8 @@
+---
+- name: Test connectivity to Ubuntu server
+  hosts: ubuntu_server
+  gather_facts: false
+  tasks:
+    - name: Ping the server
+      ping:
+
